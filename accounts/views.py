@@ -39,7 +39,8 @@ def login(request):
         try:
             # Flaw 2 + 5: raw ORM query + no hashing check → injection + crypto failure
             user = InsecureUser.objects.get(username=username, password=password)
-            
+            request.session['user_id'] = user.id
+            request.session['username'] = user.username
             # Flaw 4: no session handling → broken authentication / access control
             # Demo: no session is set, so even "logged in" users are not tracked
             # FIX would be: request.session['user_id'] = user.id
@@ -51,10 +52,12 @@ def login(request):
 
 
 # Flaw 4: protected page
+
 def secret_page(request):
     # Flaw 4: no login check, anyone can access
-    # FIX would be: check session key
+    # Commenting out the session check for demo:
     # if 'user_id' not in request.session:
     #     return HttpResponse("You must log in to see this page!")
 
+    # The message itself stays so anyone visiting sees it:
     return HttpResponse("This is a secret page! Anyone can access it due to Flaw 4.")
