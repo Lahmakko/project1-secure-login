@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import InsecureUser
+
+# from django.contrib.auth.hashers import make_password, check_password #FIX for flaw 1
 # from django.contrib.auth.hashers import make_password, check_password  # FIX for flaw 3 + 5
 # from django.contrib.auth.decorators import login_required            # FIX for flaw 4
 
@@ -10,9 +12,8 @@ def register(request):
         password = request.POST.get("password")
 
         # Flaw 1 + 5: passwords stored in plain text (no hashing/crypto)
-        # FIX: hashed_pw = make_password(password)
-        # InsecureUser.objects.create(username=username, password=hashed_pw)
-        InsecureUser.objects.create(username=username, password=password)
+        # hashed_pw = make_password(password) #FIX for flaw 1
+        # InsecureUser.objects.create(username=username, password=hashed_pw) #FIX for flaw 1
 
         # Flaw 2: no input validation → injection risk
         # FIX: validate username/password, e.g., allowed characters only
