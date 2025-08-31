@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .models import InsecureUser
+from django_ratelimit.decorators import ratelimit
+from django.http import HttpResponseForbidden
+
 
 # from django.contrib.auth.hashers import make_password, check_password #FIX for flaw 1
-# from django.contrib.auth.hashers import make_password, check_password  # FIX for flaw 3 + 5
+from django.contrib.auth.hashers import make_password, check_password  # FIX for flaw 3 + 5
 # from django.contrib.auth.decorators import login_required            # FIX for flaw 4
 
 def register(request):
@@ -28,7 +31,14 @@ def register(request):
     return render(request, "accounts/register.html")
 
 
+
+from django_ratelimit.decorators import ratelimit
+@ratelimit(key='ip', rate='5/m', block=True)  # FIX for Flaw 3: limit login attempts per IP
 def login(request):
+    if getattr(request, 'limited', False):
+        return HttpResponseForbidden("Too many login attempts. Try again later.")
+
+
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -38,11 +48,10 @@ def login(request):
             user = InsecureUser.objects.get(username=username, password=password)
             
             # Flaw 4: no session handling → broken authentication / access control
-            # FIX: store user in session
             # request.session['user'] = user.id
 
             # Flaw 3: no brute-force / rate limiting
-            # FIX: implement request throttling using a decorator or package like django-ratelimit
+            # FIX applied above via decorator
 
             return HttpResponse(f"Welcome {username}! <a href='/login'>Back</a>")
         except InsecureUser.DoesNotExist:
