@@ -17,7 +17,13 @@ def register(request):
 
         # Flaw 2: no input validation → injection risk
         # FIX: validate username/password, e.g., allowed characters only
+       # if not username.isalnum():
+       #     return HttpResponse("Invalid username: only letters and numbers allowed")
+       # if len(password) < 8:
+       #     return HttpResponse("Password too short")
 
+       # InsecureUser.objects.create(username=username, password=password)  # still plain text for flaw
+        #End Of Fix 2
         return HttpResponse(f"User {username} registered! <a href='/login'>Login</a>")
     return render(request, "accounts/register.html")
 
