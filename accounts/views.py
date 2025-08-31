@@ -32,11 +32,11 @@ def register(request):
 
 
 
-from django_ratelimit.decorators import ratelimit
-@ratelimit(key='ip', rate='5/m', block=True)  # FIX for Flaw 3: limit login attempts per IP
+#from django_ratelimit.decorators import ratelimit #fix 3
+#@ratelimit(key='ip', rate='5/m', block=True)  # FIX for Flaw 3: limit login attempts per IP
 def login(request):
-    if getattr(request, 'limited', False):
-        return HttpResponseForbidden("Too many login attempts. Try again later.")
+    #if getattr(request, 'limited', False): #FIX 3
+    #    return HttpResponseForbidden("Too many login attempts. Try again later.") #FIX 3
 
 
     if request.method == "POST":
