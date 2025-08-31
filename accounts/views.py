@@ -17,7 +17,7 @@ def register(request):
         # InsecureUser.objects.create(username=username, password=hashed_pw)  # FIX commented out
 
         # Vulnerable version: still stores plaintext
-        #InsecureUser.objects.create(username=username, password=password)  # still plain text for 
+        InsecureUser.objects.create(username=username, password=password)  # still plain text for 
         # flaw
         # Flaw 2: no input validation → injection risk
         # FIX: validate username/password, e.g., allowed characters only
